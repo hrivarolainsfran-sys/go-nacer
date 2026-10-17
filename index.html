@@ -160,7 +160,7 @@ const CATEGORIAS = [
     { id: 'filtro', label: 'El filtro perfecto', bio: 'Siempre con el filtro justo 🪄', seg: 130 },
   ]},
   { id: 'estudio', titulo: 'Estudio', Ico: IBook, opciones: [
-    { id: 'promedio', label: 'Promedio 10', bio: 'Promedio 10 📚', seg: 60 },
+    { id: 'promedio', label: 'Promedio 5', bio: 'Promedio 5 📚', seg: 60 },
     { id: 'ingles', label: 'Aprender inglés', bio: 'English: fluent 🇬🇧', seg: 70 },
     { id: 'libros', label: 'Leer más libros', bio: '12 libros este año 📖', seg: 50 },
   ]},
@@ -201,14 +201,14 @@ const NICO_OK = NICO.filter((n) => n.ok).length;
 
 // Paso 4: lo que aparece en la oscuridad.
 const LINEAS = [
-  { t: 'Todo se veía mejor.', cls: 'text-xl', c: '#7f829f' },
-  { t: 'Pero nada de eso tenía vida.', cls: 'text-xl', c: '#a3a6c2' },
-  { t: 'Puedes tener el perfil de Nicodemo y seguir de noche.', cls: 'font-display text-[2.1rem] leading-[1.05]', c: '#e7e5f3' },
+  { t: 'Todo se veía mejor.', cls: 'text-[1.35rem] font-medium', c: '#d9dbec' },
+  { t: 'Pero nada de eso tenía vida.', cls: 'text-[1.35rem] font-medium', c: '#eceef8' },
+  { t: 'Puedes tener el perfil de Nicodemo y seguir de noche.', cls: 'font-display text-[2.1rem] leading-[1.05]', c: '#f3f2fa' },
   { t: 'No necesitas un retoque. Necesitas nacer.', cls: 'font-display text-[2.7rem] leading-[1]', c: '#ffffff' },
-  { t: 'No necesitas una versión mejorada de ti: necesitas la vida nueva que da el Espíritu, y esa vida crece.', cls: 'text-lg leading-relaxed', c: '#9a9dbb' },
+  { t: 'No necesitas una versión mejorada de ti: necesitas la vida nueva que da el Espíritu, y esa vida crece.', cls: 'text-[1.3rem] leading-relaxed font-semibold', c: '#ffd23f' },
 ];
 
-const PASOS = ['Glow up', 'Nicodemo', 'Jesús', 'Noche'];
+const PASOS = ['Glow up', 'Nicodemo', 'Jesús', 'Final'];
 const STORAGE_KEY = 'go-glowup-nicodemo-v1';
 
 const cargar = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null; } catch { return null; } };
@@ -239,15 +239,25 @@ function AvatarArt({ id }) {
       )}
     </svg>
   );
-  // misterio: Nicodemo antes de armar su perfil
+  // nicodemo: maestro fariseo, de noche, con manto de oración sobre la cabeza
   return (
     <svg viewBox="0 0 100 100" className="w-full h-full">
       <rect width="100" height="100" fill="#2b3270" />
-      <circle cx="78" cy="22" r="9" fill="#f6e2b0" />
-      <circle cx="82" cy="19" r="8" fill="#2b3270" />
-      <circle cx="50" cy="40" r="17" fill="#454d8f" />
-      <path d="M16 100c3-22 17-34 34-34s31 12 34 34z" fill="#454d8f" />
-      <text x="50" y="47.5" textAnchor="middle" fontSize="21" fontWeight="800" fill="var(--lamp)" fontFamily="system-ui, sans-serif">?</text>
+      <circle cx="80" cy="20" r="8" fill="#f6e2b0" />
+      <circle cx="84" cy="17" r="7" fill="#2b3270" />
+      <circle cx="18" cy="16" r="1.2" fill="#fff" opacity=".7" /><circle cx="30" cy="9" r="1" fill="#fff" opacity=".5" />
+      <path d="M8 100c3-22 19-32 42-32s39 10 42 32z" fill="#7a4f2e" />
+      <path d="M24 60c0-24 11-38 26-38s26 14 26 38c0 12-2 26-5 40H29c-3-14-5-28-5-40z" fill="#efe6d4" />
+      <path d="M27 84h46M28 89h44" stroke="#2232a8" strokeWidth="2.2" />
+      <path d="M43 62h14v12H43z" fill="#c8936a" />
+      <ellipse cx="50" cy="49" rx="13" ry="15.5" fill="#d9a77c" />
+      <path d="M36.5 50c0 15 6.5 25 13.5 25s13.5-10 13.5-25c-3 5-8 7.5-13.5 7.5S39.5 55 36.5 50z" fill="#a39d94" />
+      <path d="M43.5 56.5c2.6-1.8 4.6-1.8 6.5 0 1.9-1.8 3.9-1.8 6.5 0" stroke="#8c867d" strokeWidth="2.2" fill="none" strokeLinecap="round" />
+      <path d="M50 47.5v5.5" stroke="#b5825c" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="45" cy="46.5" r="1.5" fill="#2a1d14" /><circle cx="55" cy="46.5" r="1.5" fill="#2a1d14" />
+      <path d="M41.5 42.5l6-1M52.5 41.5l6 1" stroke="#8c867d" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M33 41c4-9 10.5-12.5 17-12.5S63 32 67 41c-5-3.5-10.5-5-17-5s-12 1.5-17 5z" fill="#efe6d4" />
+      <path d="M36 37.5c4-3.5 8.5-5 14-5s10 1.5 14 5" stroke="#2232a8" strokeWidth="1.6" fill="none" />
     </svg>
   );
 }
@@ -509,7 +519,7 @@ function SeccionNicodemo({ nico, setNico, onLeer, onContinuar, continuado, scrol
           {completo && <span className="anim-pop"><IVerified /></span>}
         </div>
         <div className="flex items-center gap-4 mt-4">
-          <Avatar id="misterio" size={84} ring brillo={completo} />
+          <Avatar id="nicodemo" size={84} ring brillo={completo} />
           <Stats items={[[`${encontrados.length}/${NICO_OK}`, 'datos'], ['1', 'visita de noche'], ['3:1-10', 'Juan']]} />
         </div>
         <div className="mt-4 space-y-1 text-[15.5px] leading-relaxed">
@@ -583,7 +593,7 @@ function SeccionJesus({ onApagar, scroll }) {
           <p className="font-display text-[1.9rem] leading-[1.05] text-wind">¿Y tu versión mejorada? ¿Tiene vida?</p>
           <button onClick={onApagar}
             className="w-full rounded-2xl bg-[#15173a] text-white py-4 font-display text-xl inline-flex items-center justify-center gap-2.5 active:scale-[.98]">
-            <IMoon className="w-5 h-5" /> Paso 4: Apagar las luces
+            Paso 4
           </button>
         </div>
       )}
