@@ -1,0 +1,17 @@
+{
+  "name": "Nacer del Espíritu · Go!",
+  "short_name": "Go! Nacer",
+  "description": "Dinámica de Go! para la prédica «Nacer del Espíritu» (Juan 3).",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f6eee3",
+  "theme_color": "#f2400f",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

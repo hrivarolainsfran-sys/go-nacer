@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nacer del Espíritu · Go!</title>
+<meta name="description" content="Dinámica de Go! para la prédica «Nacer del Espíritu» (Juan 3): glow up, el perfil de Nicodemo y el apagón.">
+<meta name="theme-color" content="#f2400f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Go! Nacer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Gochi+Hand&family=Space+Mono:wght@400;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+  /* Layout: una sola columna tipo app (max 28rem), cabecera-afiche naranja, tarjetas tipo polaroid con cinta, apagón final a pantalla completa. Identidad: afiche de Go! "Nacer del Espíritu". */
+  :root {
+    --night: #f6eee3;      /* fondo: papel crema del afiche */
+    --surface: #fffaf2;
+    --surface-2: #f0e5d5;
+    --line: #e2d2bb;
+    --text: #1a1f4f;       /* tinta azul marino */
+    --muted: #6c6880;
+    --lamp: #f2400f;       /* naranja Go!: acento principal */
+    --lamp-soft: rgba(242, 64, 15, 0.14);
+    --ember: #c92f06;
+    --wind: #2232a8;       /* azul de los garabatos */
+    --wind-soft: rgba(34, 50, 168, 0.08);
+    --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+    --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+    color-scheme: light;
+  }
+  html, body { background: var(--night); color: var(--text); }
+  body { font-family: var(--font-body); font-size: 16px; -webkit-tap-highlight-color: transparent; }
+  .gutter {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  h1, h2, h3 { text-wrap: balance; }
+  .font-display { font-weight: 400 !important; font-synthesis: none; text-transform: uppercase; letter-spacing: .01em; }
+  .font-hand { font-family: "Gochi Hand", "Comic Sans MS", cursive; }
+  .font-mono { font-family: "Space Mono", ui-monospace, Menlo, monospace; }
+  .polaroid { background: var(--surface); box-shadow: 0 1px 0 var(--line), 0 18px 40px -22px rgba(26, 31, 79, .45); }
+  .tape {
+    position: absolute; height: 22px; width: 96px; z-index: 2; opacity: .93; background-color: var(--wind);
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,.35) 0 2px, transparent 2px 11px),
+                      repeating-linear-gradient(0deg, rgba(255,255,255,.35) 0 2px, transparent 2px 11px);
+  }
+  .tape-dots { background-image: radial-gradient(circle, rgba(255,255,255,.5) 2.5px, transparent 3px); background-size: 11px 11px; }
+  .ring-story { background: conic-gradient(from 200deg, var(--lamp), #ffb03a, var(--wind), var(--lamp)); }
+  :focus-visible { outline: 2px solid var(--lamp); outline-offset: 2px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes sheet { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes shake { 0%,100% { transform: none; } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(3px); } }
+  @keyframes toast { 0% { opacity: 0; transform: translateY(6px); } 15% { opacity: 1; transform: none; } 75% { opacity: 1; } 100% { opacity: 0; transform: translateY(-10px); } }
+  @keyframes pop { 0% { transform: scale(.9); } 60% { transform: scale(1.06); } 100% { transform: none; } }
+  .anim-rise { animation: rise .45s cubic-bezier(.2,.8,.2,1) both; }
+  .anim-sheet { animation: sheet .32s cubic-bezier(.2,.8,.2,1) both; }
+  .anim-fade { animation: fade .5s ease both; }
+  .anim-shake { animation: shake .45s ease both; }
+  .anim-toast { animation: toast 1.4s ease both; }
+  .anim-pop { animation: pop .3s ease both; }
+  .linea-apagon { animation: fade 1.4s ease both; }
+  @media (prefers-reduced-motion: reduce) {
+    .anim-rise, .anim-sheet, .anim-fade, .anim-shake, .anim-toast, .anim-pop, .linea-apagon { animation: none; }
+    * { scroll-behavior: auto !important; transition: none !important; }
+  }
+</style>
+<style>
+  /* Ajustes de app instalada: la franja naranja llega debajo de la barra de estado. */
+  html, body { margin: 0; min-height: 100%; }
+  header > div.relative { padding-top: calc(24px + env(safe-area-inset-top, 0px)); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          night: 'var(--night)', surface: 'var(--surface)', surface2: 'var(--surface-2)',
+          line: 'var(--line)', ink: 'var(--text)', muted: 'var(--muted)',
+          lamp: 'var(--lamp)', ember: 'var(--ember)', wind: 'var(--wind)',
+        },
+        fontFamily: {
+          display: ['Anton', 'Impact', '"Arial Narrow"', 'sans-serif'],
+          body: ['Figtree', '"Segoe UI"', 'system-ui', 'sans-serif'],
+        },
+      },
+    },
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef } = React;
+
+/* ───────────── Íconos ───────────── */
+
+const Icon = ({ d, className = 'w-5 h-5', stroke = 2, children }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {d ? <path d={d} /> : children}
+  </svg>
+);
+const IBook = (p) => <Icon {...p} d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5" />;
+const IClose = (p) => <Icon {...p} d="M6 6l12 12M18 6L6 18" />;
+const IMoon = (p) => <Icon {...p} d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z" />;
+const ICheck = (p) => <Icon {...p} d="M5 12.5l4.5 4.5L19 7.5" />;
+const IDumbbell = (p) => <Icon {...p} d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12" />;
+const ISpark = (p) => <Icon {...p} d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z" />;
+const IUsers = (p) => <Icon {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5" /><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.8.7 3 2.4 3.5 5.2" /></Icon>;
+const ICross = (p) => <Icon {...p} d="M12 3v18M7 8.5h10" />;
+const IVerified = ({ className = 'w-4 h-4' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-label="Verificado">
+    <path fill="var(--wind)" d="M12 1.8l2.5 1.8 3.1-.1 1 2.9 2.5 1.9-.9 3 .9 3-2.5 1.9-1 2.9-3.1-.1L12 22.2l-2.5-1.8-3.1.1-1-2.9-2.5-1.9.9-3-.9-3 2.5-1.9 1-2.9 3.1.1z" />
+    <path d="M8 12.2l2.7 2.7L16.2 9.4" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+);
+
+/* ───────────── Contenido ───────────── */
+
+// Juan 3:1-10, Nueva Traducción Viviente (NTV), la versión de la lección.
+const PASAJE = [
+  [1, 'Había un hombre llamado Nicodemo, un líder religioso judío, de los fariseos.'],
+  [2, 'Una noche, fue a hablar con Jesús: —Rabí —le dijo—, todos sabemos que Dios te ha enviado para enseñarnos. Las señales milagrosas que haces son la prueba de que Dios está contigo.'],
+  [3, 'Jesús le respondió: —Te digo la verdad, a menos que nazcas de nuevo, no puedes ver el reino de Dios.'],
+  [4, '—¿Qué quieres decir? —exclamó Nicodemo—. ¿Cómo puede un hombre mayor volver al vientre de su madre y nacer de nuevo?'],
+  [5, 'Jesús le contestó: —Te digo la verdad, nadie puede entrar en el reino de Dios si no nace de agua y del Espíritu.'],
+  [6, 'El ser humano solo puede reproducir la vida humana, pero la vida espiritual nace del Espíritu Santo.'],
+  [7, 'Así que no te sorprendas cuando digo: “Tienen que nacer de nuevo”.'],
+  [8, 'El viento sopla hacia donde quiere. De la misma manera que oyes el viento pero no sabes de dónde viene ni adónde va, tampoco puedes explicar cómo las personas nacen del Espíritu.'],
+  [9, '—¿Cómo es posible todo esto? —preguntó Nicodemo.'],
+  [10, 'Jesús le contestó: —¿Tú eres un respetado maestro judío y aún no entiendes estas cosas?'],
+];
+
+// Paso 1: opciones del glow up. "seg" = seguidores que suma.
+const CATEGORIAS = [
+  { id: 'fisico', titulo: 'Físico', Ico: IDumbbell, opciones: [
+    { id: 'gym', label: 'Ir al gym', bio: 'Gym 5 veces por semana 💪', seg: 180 },
+    { id: 'fit', label: 'Comida fit', bio: 'Comida fit 🥗 cero azúcar', seg: 120 },
+    { id: 'skin', label: 'Skincare', bio: 'Skincare de 7 pasos ✨', seg: 90 },
+    { id: 'dormir', label: 'Dormir 8 horas', bio: 'Duermo 8 horas (casi) 😴', seg: 40 },
+    { id: 'correr', label: 'Correr 5K', bio: 'Corrí mi primer 5K 🏃', seg: 110 },
+  ]},
+  { id: 'look', titulo: 'Look', Ico: ISpark, opciones: [
+    { id: 'corte', label: 'Cambio de look', bio: 'Nuevo look ✂️', seg: 200 },
+    { id: 'ropa', label: 'Ropa nueva', bio: 'Outfit del día 👟', seg: 150 },
+    { id: 'foto', label: 'Foto de perfil pro', bio: 'Foto nueva 📸', seg: 250 },
+    { id: 'filtro', label: 'El filtro perfecto', bio: 'Siempre con el filtro justo 🪄', seg: 130 },
+  ]},
+  { id: 'estudio', titulo: 'Estudio', Ico: IBook, opciones: [
+    { id: 'promedio', label: 'Promedio 10', bio: 'Promedio 10 📚', seg: 60 },
+    { id: 'ingles', label: 'Aprender inglés', bio: 'English: fluent 🇬🇧', seg: 70 },
+    { id: 'libros', label: 'Leer más libros', bio: '12 libros este año 📖', seg: 50 },
+  ]},
+  { id: 'social', titulo: 'Social', Ico: IUsers, opciones: [
+    { id: 'mil', label: '+1000 seguidores', bio: 'Ya somos +1000 🙌', seg: 1000 },
+    { id: 'gracioso', label: 'Ser el más gracioso', bio: 'El que hace reír al grupo 😂', seg: 300 },
+    { id: 'influencer', label: 'Hacerme influencer', bio: 'Colabs al DM 📩', seg: 800 },
+  ]},
+  { id: 'iglesia', titulo: 'Iglesia', Ico: ICross, opciones: [
+    { id: 'palabras', label: 'No decir malas palabras', bio: 'Ya no digo malas palabras 🤐', seg: 40 },
+    { id: 'domingos', label: 'Ir todos los domingos', bio: 'Todos los domingos en primera fila 📍', seg: 60 },
+    { id: 'canciones', label: 'Saberme las canciones', bio: 'Me sé todas las canciones 🎶', seg: 50 },
+    { id: 'campa', label: 'Ir al campamento', bio: 'Campamento 2025 ⛺', seg: 90 },
+    { id: 'alabanza', label: 'Ser líder de alabanza', bio: 'Líder de alabanza 🎤', seg: 120 },
+  ]},
+];
+const TODAS = CATEGORIAS.flatMap((c) => c.opciones.map((o) => ({ ...o, cat: c.id })));
+const META = 10;          // opciones para llegar al 100 %
+const MINIMO = 5;         // opciones para poder publicar
+const BASE_SEG = 87;
+
+// Paso 2: frases para armar el perfil de Nicodemo (las ok salen del texto).
+const NICO = [
+  { id: 'n1', texto: 'Era fariseo', ok: true, ref: '3:1' },
+  { id: 'd1', texto: 'Era pescador', ok: false },
+  { id: 'n2', texto: 'Líder religioso de los judíos', ok: true, ref: '3:1' },
+  { id: 'n3', texto: 'Fue a ver a Jesús de noche', ok: true, ref: '3:2' },
+  { id: 'd2', texto: 'Cobraba impuestos', ok: false },
+  { id: 'n4', texto: 'Llamó a Jesús «Rabí»', ok: true, ref: '3:2' },
+  { id: 'd3', texto: 'Era uno de los doce discípulos', ok: false },
+  { id: 'n5', texto: 'Sabía que Dios había enviado a Jesús', ok: true, ref: '3:2' },
+  { id: 'n6', texto: 'Reconocía sus señales milagrosas', ok: true, ref: '3:2' },
+  { id: 'd4', texto: 'Se burlaba de Jesús', ok: false },
+  { id: 'n7', texto: 'Respetado maestro de Israel', ok: true, ref: '3:10' },
+  { id: 'd5', texto: 'No conocía las Escrituras', ok: false },
+];
+const NICO_OK = NICO.filter((n) => n.ok).length;
+
+// Paso 4: lo que aparece en la oscuridad.
+const LINEAS = [
+  { t: 'Todo se veía mejor.', cls: 'text-xl', c: '#7f829f' },
+  { t: 'Pero nada de eso tenía vida.', cls: 'text-xl', c: '#a3a6c2' },
+  { t: 'Puedes tener el perfil de Nicodemo y seguir de noche.', cls: 'font-display text-[2.1rem] leading-[1.05]', c: '#e7e5f3' },
+  { t: 'No necesitas un retoque. Necesitas nacer.', cls: 'font-display text-[2.7rem] leading-[1]', c: '#ffffff' },
+  { t: 'No necesitas una versión mejorada de ti: necesitas la vida nueva que da el Espíritu, y esa vida crece.', cls: 'text-lg leading-relaxed', c: '#9a9dbb' },
+];
+
+const PASOS = ['Glow up', 'Nicodemo', 'Jesús', 'Noche'];
+const STORAGE_KEY = 'go-glowup-nicodemo-v1';
+
+const cargar = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || null; } catch { return null; } };
+const guardar = (d) => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(d)); } catch {} };
+const fmt = (n) => n.toLocaleString('es-AR');
+const reducedMotion = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const scrollA = (el) => el && el.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+
+/* ───────────── Avatares ───────────── */
+
+function AvatarArt({ id }) {
+  if (id === 'capucha' || id === 'pro') return (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <rect width="100" height="100" fill={id === 'pro' ? 'var(--lamp)' : '#c9bfb2'} />
+      <path d="M12 100c2-22 15-34 38-34s36 12 38 34z" fill="var(--wind)" />
+      <path d="M28 60c0-20 10-34 22-34s22 14 22 34c0 6-4 10-10 12H38c-6-2-10-6-10-12z" fill="var(--wind)" />
+      <ellipse cx="50" cy="54" rx="12" ry="15" fill="#f1c7a2" />
+      <path d="M25 54a25 25 0 0 1 50 0" stroke="#15173a" strokeWidth="4" fill="none" />
+      <rect x="20" y="50" width="9" height="17" rx="4" fill="#15173a" />
+      <rect x="71" y="50" width="9" height="17" rx="4" fill="#15173a" />
+      <path d="M44 76v12M56 76v12" stroke="#f6eee3" strokeWidth="2.4" strokeLinecap="round" />
+      {id === 'pro' && (
+        <g>
+          <path d="M38.5 49h10v5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4zM51.5 49h10v5a4 4 0 0 1-4 4h-2a4 4 0 0 1-4-4z" fill="#15173a" />
+          <path d="M48.5 51h3" stroke="#15173a" strokeWidth="2" />
+          <path d="M82 14l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#fff" />
+        </g>
+      )}
+    </svg>
+  );
+  // misterio: Nicodemo antes de armar su perfil
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full">
+      <rect width="100" height="100" fill="#2b3270" />
+      <circle cx="78" cy="22" r="9" fill="#f6e2b0" />
+      <circle cx="82" cy="19" r="8" fill="#2b3270" />
+      <circle cx="50" cy="40" r="17" fill="#454d8f" />
+      <path d="M16 100c3-22 17-34 34-34s31 12 34 34z" fill="#454d8f" />
+      <text x="50" y="47.5" textAnchor="middle" fontSize="21" fontWeight="800" fill="var(--lamp)" fontFamily="system-ui, sans-serif">?</text>
+    </svg>
+  );
+}
+
+function Avatar({ id, size = 88, ring = false, brillo = false }) {
+  return (
+    <div className={`rounded-full shrink-0 ${ring ? 'p-[3px]' : ''} ${ring && brillo ? 'ring-story' : ring ? 'bg-line' : ''}`}
+         style={{ width: size, height: size, transition: 'background .4s' }}>
+      <div className={`w-full h-full rounded-full overflow-hidden ${ring ? 'border-[3px] border-night' : ''}`}>
+        <AvatarArt id={id} />
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── Piezas compartidas ───────────── */
+
+function Garabatos() {
+  return (
+    <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 400 300" preserveAspectRatio="xMaxYMin slice" aria-hidden="true">
+      <g fill="none" stroke="var(--wind)" strokeWidth="3.2" strokeLinejoin="round" strokeLinecap="round">
+        <path d="M352 -6 L360 30 L396 14 L372 46 L404 66 L366 64 L362 100 L346 70 L312 84 L334 54 L306 34 L342 36 Z" />
+        <path d="M300 186 m-6 0 a6 6 0 1 1 12 0 a12 12 0 1 1 -24 0 a18 18 0 1 1 36 0 a24 24 0 1 1 -48 0" />
+        <path d="M-10 286 q40 -14 80 -2 t80 -4" />
+      </g>
+    </svg>
+  );
+}
+
+function Pasos({ actual }) {
+  return (
+    <ol className="flex items-center gap-1.5" aria-label="Pasos de la dinámica">
+      {PASOS.map((p, i) => {
+        const n = i + 1, hecho = n < actual, activo = n === actual;
+        return (
+          <li key={p} className="flex-1 min-w-0" aria-current={activo ? 'step' : undefined}>
+            <div className={`h-1 rounded-full ${activo ? 'bg-white' : hecho ? 'bg-white/60' : 'bg-white/25'}`} />
+            <span className={`mt-1.5 block font-mono text-[10px] tracking-wide uppercase truncate ${activo ? 'text-white font-bold' : 'text-white/75'}`}>
+              {n}. {p}
+            </span>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+function Rotulo({ children }) {
+  return <p className="font-hand text-xl text-lamp -rotate-1">{children}</p>;
+}
+
+function Stats({ items }) {
+  return (
+    <dl className="flex-1 grid grid-cols-3 gap-1 text-center">
+      {items.map(([n, l]) => (
+        <div key={l} className="min-w-0">
+          <dt className="sr-only">{l}</dt>
+          <dd className="font-display text-[1.35rem] tabular-nums leading-tight">{n}</dd>
+          <dd className="text-[11.5px] leading-tight text-muted">{l}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function ModalLectura({ abierto, onClose }) {
+  useEffect(() => {
+    if (!abierto) return;
+    const onKey = (e) => e.key === 'Escape' && onClose();
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [abierto]);
+  if (!abierto) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center" role="dialog" aria-modal="true" aria-labelledby="titulo-lectura">
+      <button className="absolute inset-0 bg-black/60 anim-fade cursor-default" aria-label="Cerrar lectura" onClick={onClose} />
+      <div className="relative w-full max-w-md max-h-[88%] flex flex-col bg-surface border border-line rounded-t-3xl sm:rounded-3xl anim-sheet"
+           style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+        <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-line sm:hidden" />
+        <header className="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-line">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.14em] text-muted">Nueva Traducción Viviente</p>
+            <h2 id="titulo-lectura" className="font-display text-3xl">Juan 3:1-10</h2>
+          </div>
+          <button onClick={onClose} className="p-2 -mr-2 rounded-full text-muted hover:text-ink hover:bg-surface2" aria-label="Cerrar"><IClose /></button>
+        </header>
+        <div className="overflow-y-auto px-5 py-4 space-y-3 text-[17px] leading-relaxed">
+          {PASAJE.map(([n, t]) => (
+            <p key={n}><sup className="font-bold text-lamp mr-1.5 text-xs">{n}</sup>{t}</p>
+          ))}
+          <p className="mt-5 rounded-2xl bg-surface2 border border-line p-4 text-sm text-muted">
+            <span className="text-ink font-semibold">Pista:</span> para el perfil de Nicodemo, fíjate sobre todo en los versículos 1, 2 y 10.
+          </p>
+          <p className="text-[11px] text-muted">Texto bíblico de la Santa Biblia, Nueva Traducción Viviente, © Tyndale House Foundation, 2010.</p>
+        </div>
+        <div className="px-5 py-3 border-t border-line">
+          <button onClick={onClose} className="w-full rounded-2xl bg-lamp text-white font-semibold py-3">Volver</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── Paso 1: tu glow up ───────────── */
+
+function PerfilGlow({ elegidas, seguidores, pct }) {
+  const cats = CATEGORIAS.filter((c) => elegidas.some((o) => o.cat === c.id));
+  const pro = elegidas.some((o) => o.id === 'foto');
+  return (
+    <article className="relative polaroid rounded-md p-4 pt-5" aria-label="Tu perfil">
+      <span className="tape" style={{ top: -11, right: 26, transform: 'rotate(4deg)' }} />
+      <div className="flex items-center gap-1.5 min-w-0">
+        <h3 className="font-semibold text-lg truncate">yo_version_2.0</h3>
+        {seguidores >= 1000 && <span className="anim-pop"><IVerified /></span>}
+        <span className={`ml-auto shrink-0 font-mono text-[10px] uppercase tracking-wide rounded-full px-2 py-1 ${pct === 100 ? 'bg-lamp text-white' : 'bg-surface2 text-muted'}`}>
+          {pct === 100 ? 'Versión mejorada' : 'En proceso'}
+        </span>
+      </div>
+      <div className="flex items-center gap-4 mt-4">
+        <Avatar id={pro ? 'pro' : 'capucha'} size={84} ring brillo={pct === 100} />
+        <Stats items={[[fmt(3 + elegidas.length * 2), 'publicaciones'], [fmt(seguidores), 'seguidores'], ['312', 'seguidos']]} />
+      </div>
+      <div className="mt-4 text-[15.5px] leading-relaxed">
+        <p className="font-semibold">{pct === 100 ? 'Mi mejor versión ✨' : 'Versión 2.0 en proceso 🔧'}</p>
+        {elegidas.length === 0 && <p className="text-muted">Todavía nada por acá. Toca opciones abajo.</p>}
+        {elegidas.map((o) => <p key={o.id} className="anim-fade">{o.bio}</p>)}
+      </div>
+      <ul className="flex gap-3 mt-5 overflow-x-auto pb-1" aria-label="Destacados">
+        {cats.length === 0 && [0, 1, 2].map((k) => (
+          <li key={k} className="flex flex-col items-center gap-1.5 shrink-0">
+            <span className="w-[60px] h-[60px] rounded-full border-2 border-dashed border-line" />
+            <span className="text-[12px] text-muted">Destacado</span>
+          </li>
+        ))}
+        {cats.map(({ id, titulo, Ico }) => (
+          <li key={id} className="flex flex-col items-center gap-1.5 shrink-0 anim-pop">
+            <span className="rounded-full p-[2px] bg-lamp">
+              <span className="w-[56px] h-[56px] rounded-full grid place-items-center bg-surface border-[3px] border-night text-lamp"><Ico className="w-6 h-6" /></span>
+            </span>
+            <span className="text-[12px] font-medium">{titulo}</span>
+          </li>
+        ))}
+      </ul>
+    </article>
+  );
+}
+
+function SeccionGlow({ picks, setPicks, publicado, onPublicar }) {
+  const [toast, setToast] = useState(null);
+  const elegidas = TODAS.filter((o) => picks.includes(o.id));
+  const seguidores = BASE_SEG + elegidas.reduce((a, o) => a + o.seg, 0);
+  const pct = Math.min(100, Math.round((picks.length * 100) / META));
+
+  const toggle = (o) => {
+    if (publicado) return;
+    const on = picks.includes(o.id);
+    setPicks(on ? picks.filter((x) => x !== o.id) : [...picks, o.id]);
+    if (!on) setToast({ k: Date.now(), t: `+${fmt(o.seg)} seguidores` });
+  };
+
+  return (
+    <section className="space-y-6" aria-labelledby="titulo-glow">
+      <div className="anim-rise">
+        <Rotulo>Paso 1 · tu glow up</Rotulo>
+        <h2 id="titulo-glow" className="font-display text-[2.2rem] leading-[1.02] mt-1">Arma tu versión mejorada</h2>
+        <p className="text-muted mt-2 leading-relaxed">Toca todo lo que te haría una mejor versión de ti y mira cómo cambia tu perfil.</p>
+      </div>
+
+      <PerfilGlow elegidas={elegidas} seguidores={seguidores} pct={pct} />
+
+      <div className="sticky z-20 -mx-4 px-4 py-3 bg-[rgba(246,238,227,.94)] backdrop-blur border-b border-line"
+           style={{ top: 'env(safe-area-inset-top, 0px)' }}>
+        <div className="relative flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-wide text-muted">Nivel de glow up</span>
+              <span className="font-display text-xl tabular-nums leading-none">{pct}%</span>
+            </div>
+            <div className="mt-1.5 h-2.5 rounded-full bg-line overflow-hidden">
+              <div className="h-full rounded-full bg-lamp" style={{ width: `${pct}%`, transition: 'width .4s cubic-bezier(.2,.8,.2,1)' }} />
+            </div>
+          </div>
+          <div className="text-right shrink-0">
+            <span className="block font-display text-xl tabular-nums leading-none">{fmt(seguidores)}</span>
+            <span className="text-[11px] text-muted">seguidores</span>
+          </div>
+          {toast && (
+            <span key={toast.k} className="anim-toast absolute right-0 -top-7 rounded-full bg-wind text-white text-xs font-semibold px-2.5 py-1 pointer-events-none">
+              {toast.t}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {CATEGORIAS.map(({ id, titulo, Ico, opciones }) => (
+        <div key={id}>
+          <h3 className="flex items-center gap-2 font-display text-xl"><Ico className="w-5 h-5 text-lamp" /> {titulo}</h3>
+          <div className="flex flex-wrap gap-2 mt-3">
+            {opciones.map((o) => {
+              const on = picks.includes(o.id);
+              return (
+                <button key={o.id} id={`op-${o.id}`} onClick={() => toggle(o)} aria-pressed={on} disabled={publicado && !on}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-[15px] font-semibold border transition active:scale-[.96]
+                    ${on ? 'bg-lamp border-lamp text-white anim-pop' : 'bg-surface border-line text-ink hover:border-lamp'}
+                    ${publicado && !on ? 'opacity-40' : ''}`}>
+                  {on && <ICheck className="w-4 h-4" stroke={3} />}{o.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+
+      {!publicado ? (
+        <button onClick={onPublicar} disabled={picks.length < MINIMO}
+          className={`w-full rounded-2xl py-4 font-display text-xl transition ${picks.length >= MINIMO ? 'bg-lamp text-white shadow-[0_10px_30px_-10px_var(--lamp)] active:scale-[.98]' : 'bg-surface2 text-muted border border-line cursor-not-allowed'}`}>
+          {picks.length >= MINIMO ? 'Publicar mi versión mejorada' : `Elige al menos ${MINIMO} (${picks.length}/${MINIMO})`}
+        </button>
+      ) : (
+        <div className="rounded-2xl border-2 border-lamp text-lamp py-3 text-center font-display text-xl -rotate-1 anim-pop">Publicado ✓</div>
+      )}
+    </section>
+  );
+}
+
+/* ───────────── Paso 2: el perfil de Nicodemo ───────────── */
+
+function SeccionNicodemo({ nico, setNico, onLeer, onContinuar, continuado, scroll }) {
+  const ref = useRef(null);
+  const [error, setError] = useState(null);
+  useEffect(() => { if (scroll) setTimeout(() => scrollA(ref.current), 80); }, []);
+  useEffect(() => { if (!error) return; const t = setTimeout(() => setError(null), 1300); return () => clearTimeout(t); }, [error]);
+
+  const encontrados = NICO.filter((n) => n.ok && nico.includes(n.id));
+  const completo = encontrados.length === NICO_OK;
+  const tocar = (n) => {
+    if (nico.includes(n.id)) return;
+    if (n.ok) setNico([...nico, n.id]);
+    else setError({ id: n.id, k: Date.now() });
+  };
+
+  return (
+    <section ref={ref} className="mt-14 space-y-6 scroll-mt-4 anim-rise" aria-labelledby="titulo-nico">
+      <div>
+        <Rotulo>Paso 2 · el perfil de Nicodemo</Rotulo>
+        <h2 id="titulo-nico" className="font-display text-[2.2rem] leading-[1.02] mt-1">Alguien que ya tenía el glow up completo</h2>
+        <p className="text-muted mt-2 leading-relaxed">Lean Juan 3:1-10 y toquen solo lo que el texto dice de él.</p>
+        <button onClick={onLeer} className="mt-3 inline-flex items-center gap-2 rounded-full bg-wind text-white font-semibold px-4 py-2.5">
+          <IBook className="w-[18px] h-[18px]" /> Leer Juan 3:1-10
+        </button>
+      </div>
+
+      <article className="relative polaroid rounded-md p-4 pt-5" aria-label="Perfil de Nicodemo">
+        <span className="tape tape-dots" style={{ top: -11, left: 22, transform: 'rotate(-6deg)' }} />
+        <div className="flex items-center gap-1.5 min-w-0">
+          <h3 className="font-semibold text-lg truncate">nicodemo_oficial</h3>
+          {completo && <span className="anim-pop"><IVerified /></span>}
+        </div>
+        <div className="flex items-center gap-4 mt-4">
+          <Avatar id="misterio" size={84} ring brillo={completo} />
+          <Stats items={[[`${encontrados.length}/${NICO_OK}`, 'datos'], ['1', 'visita de noche'], ['3:1-10', 'Juan']]} />
+        </div>
+        <div className="mt-4 space-y-1 text-[15.5px] leading-relaxed">
+          {encontrados.length === 0 && <p className="text-muted">Su perfil está vacío. Toquen las frases correctas.</p>}
+          {encontrados.map((n) => (
+            <p key={n.id} className="anim-fade flex items-baseline justify-between gap-3">
+              <span>{n.texto}</span><span className="font-mono text-[11px] text-muted shrink-0">Jn {n.ref}</span>
+            </p>
+          ))}
+        </div>
+      </article>
+
+      <div>
+        <p className="font-semibold">¿Qué dice el texto? <span className="text-muted font-normal tabular-nums">({encontrados.length} de {NICO_OK})</span></p>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {NICO.map((n) => {
+            const on = nico.includes(n.id);
+            const mal = error && error.id === n.id;
+            return (
+              <button key={n.id} id={`nico-${n.id}`} onClick={() => tocar(n)} aria-pressed={on}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-2.5 text-[15px] font-semibold border transition
+                  ${on ? 'bg-wind border-wind text-white anim-pop' : mal ? 'border-ember text-ember bg-surface anim-shake' : 'bg-surface border-line text-ink hover:border-wind'}`}>
+                {on && <ICheck className="w-4 h-4" stroke={3} />}
+                {mal ? 'El texto no dice eso' : n.texto}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {completo && (
+        <div className="rounded-md bg-wind text-white p-4 anim-pop">
+          <p className="font-display text-2xl leading-tight">Nicodemo: glow up religioso 100%</p>
+          <p className="text-white/85 mt-1 text-[15px]">Tenía todo lo que una persona religiosa podía tener.</p>
+        </div>
+      )}
+
+      {!continuado && (
+        <button onClick={onContinuar} disabled={encontrados.length < 4}
+          className={`w-full rounded-2xl py-4 font-display text-xl transition ${encontrados.length >= 4 ? 'bg-lamp text-white active:scale-[.98]' : 'bg-surface2 text-muted border border-line cursor-not-allowed'}`}>
+          {encontrados.length >= 4 ? 'Paso 3: La respuesta de Jesús' : `Encuentren al menos 4 (${encontrados.length}/4)`}
+        </button>
+      )}
+    </section>
+  );
+}
+
+/* ───────────── Paso 3: la respuesta de Jesús ───────────── */
+
+function SeccionJesus({ onApagar, scroll }) {
+  const ref = useRef(null);
+  const [verso, setVerso] = useState(false);
+  useEffect(() => { if (scroll) setTimeout(() => scrollA(ref.current), 80); }, []);
+
+  return (
+    <section ref={ref} className="mt-14 scroll-mt-4 anim-rise space-y-5 pb-4" aria-labelledby="titulo-jesus">
+      <Rotulo>Paso 3 · la respuesta de Jesús</Rotulo>
+      <h2 id="titulo-jesus" className="font-display text-[2.2rem] leading-[1.02]">Con ese perfil, ¿qué le dice Jesús que le falta?</h2>
+      {!verso ? (
+        <button onClick={() => setVerso(true)} className="inline-flex items-center gap-2 rounded-full border-2 border-wind text-wind px-4 py-2.5 font-semibold">
+          <IBook className="w-[18px] h-[18px]" /> Leer Juan 3:3
+        </button>
+      ) : (
+        <div className="space-y-5 anim-fade">
+          <blockquote className="relative polaroid rounded-md p-5 pt-6 text-[18px] leading-relaxed">
+            <span className="tape" style={{ top: -11, right: 30, transform: 'rotate(5deg)' }} />
+            {PASAJE[2][1]}
+            <footer className="font-mono text-[11px] text-muted mt-3">Juan 3:3 (NTV)</footer>
+          </blockquote>
+          <p className="text-[17px] leading-relaxed">Jesús no le propone mejorar su perfil. No le dice «te falta un poco más». Le dice que tiene que <strong>nacer</strong>.</p>
+          <p className="font-display text-[1.9rem] leading-[1.05] text-wind">¿Y tu versión mejorada? ¿Tiene vida?</p>
+          <button onClick={onApagar}
+            className="w-full rounded-2xl bg-[#15173a] text-white py-4 font-display text-xl inline-flex items-center justify-center gap-2.5 active:scale-[.98]">
+            <IMoon className="w-5 h-5" /> Paso 4: Apagar las luces
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/* ───────────── Paso 4: el apagón ───────────── */
+
+function Apagon({ picks, nico, onReiniciar }) {
+  const items = [
+    ...TODAS.filter((o) => picks.includes(o.id)).map((o) => o.label),
+    ...NICO.filter((n) => n.ok && nico.includes(n.id)).map((n) => n.texto),
+  ];
+  const rm = reducedMotion();
+  const [off, setOff] = useState(rm ? items.length : 0);
+  const [linea, setLinea] = useState(rm ? LINEAS.length : 0);
+  const [confirmar, setConfirmar] = useState(false);
+
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+  useEffect(() => {
+    if (off < items.length) { const t = setTimeout(() => setOff(off + 1), off === 0 ? 1200 : 420); return () => clearTimeout(t); }
+    if (linea < LINEAS.length) { const t = setTimeout(() => setLinea(linea + 1), linea === 0 ? 1600 : 2600); return () => clearTimeout(t); }
+  }, [off, linea]);
+
+  const p = items.length ? off / items.length : 1;
+  const mix = (a, b) => Math.round(a + (b - a) * p);
+  const oscuro = off >= items.length;
+
+  return (
+    <div className="fixed inset-0 z-[60] overflow-y-auto" role="dialog" aria-modal="true" aria-label="Apagón"
+         style={{ background: `rgb(${mix(246, 3)},${mix(238, 4)},${mix(227, 9)})`, color: `rgb(${mix(26, 120)},${mix(31, 122)},${mix(79, 140)})`,
+                  transition: 'background .45s linear, color .45s linear',
+                  paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+      <div className="gutter max-w-md mx-auto min-h-full flex flex-col py-10">
+        {!oscuro ? (
+          <div className="my-auto">
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em]">Apagando…</p>
+            <ul className="flex flex-wrap gap-2 mt-5">
+              {items.map((t, i) => {
+                const apagado = i < off;
+                return (
+                  <li key={i} className="rounded-full px-3.5 py-2 text-[15px] font-semibold border"
+                      style={{ transition: 'all .5s ease',
+                               background: apagado ? 'transparent' : 'var(--lamp)', color: apagado ? 'currentColor' : '#fff',
+                               borderColor: apagado ? 'rgba(127,130,159,.35)' : 'var(--lamp)', opacity: apagado ? .35 : 1,
+                               boxShadow: apagado ? 'none' : '0 6px 18px -6px var(--lamp)', textDecoration: apagado ? 'line-through' : 'none' }}>
+                    {t}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col justify-center gap-8 py-6" aria-live="polite">
+            {LINEAS.slice(0, linea).map((l, i) => (
+              <p key={i} className={`linea-apagon ${l.cls}`} style={{ color: l.c }}>{l.t}</p>
+            ))}
+          </div>
+        )}
+        {oscuro && linea >= LINEAS.length && (
+          <div className="mt-8 flex justify-center">
+            {!confirmar ? (
+              <button onClick={() => setConfirmar(true)} className="text-[11px] px-3 py-2" style={{ color: 'rgba(255,255,255,.2)' }}>reiniciar</button>
+            ) : (
+              <div className="flex items-center gap-3 text-[12px]" style={{ color: 'rgba(255,255,255,.45)' }}>
+                <span>¿Empezar todo de nuevo?</span>
+                <button onClick={() => setConfirmar(false)} className="px-2 py-1">No</button>
+                <button onClick={onReiniciar} className="px-2 py-1 rounded border" style={{ borderColor: 'rgba(255,255,255,.3)' }}>Sí</button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────── App ───────────── */
+
+function App() {
+  const inicial = useRef(cargar()).current || {};
+  const [picks, setPicks] = useState(Array.isArray(inicial.picks) ? inicial.picks : []);
+  const [nico, setNico] = useState(Array.isArray(inicial.nico) ? inicial.nico : []);
+  const [fase, setFase] = useState(Math.min(Math.max(inicial.fase || 1, 1), 3));
+  const [apagon, setApagon] = useState(false);
+  const [lectura, setLectura] = useState(false);
+  const vivo = useRef(false);
+
+  useEffect(() => { vivo.current = true; }, []);
+  useEffect(() => { guardar({ picks, nico, fase }); }, [picks, nico, fase]);
+
+  const avanzar = (n) => setFase((f) => Math.max(f, n));
+  const reiniciar = () => {
+    setPicks([]); setNico([]); setFase(1); setApagon(false);
+    window.scrollTo({ top: 0 });
+  };
+
+  return (
+    <div className="min-h-full font-body">
+      <header className="relative overflow-hidden bg-lamp text-white">
+        <Garabatos />
+        <div className="relative gutter max-w-md mx-auto pt-6 pb-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="font-mono text-[11px] tracking-[0.1em] uppercase">Serie: Creo en el Espíritu Santo</p>
+              <h1 className="font-display text-[clamp(3rem,15vw,4.2rem)] leading-[0.9] mt-2">Nacer del<br />Espíritu</h1>
+              <p className="font-hand text-[1.35rem] mt-2 -rotate-1">Glow up · Juan 3</p>
+            </div>
+            <span className="font-display text-[2.6rem] leading-none mt-1 shrink-0" aria-label="Go!"
+                  style={{ transform: 'skewX(-12deg)', textShadow: '3px 3px 0 var(--wind)' }}>Go!</span>
+          </div>
+          <div className="mt-5"><Pasos actual={apagon ? 4 : fase} /></div>
+        </div>
+      </header>
+
+      <main className="gutter max-w-md mx-auto pt-7 pb-32">
+        <SeccionGlow picks={picks} setPicks={setPicks} publicado={fase >= 2} onPublicar={() => avanzar(2)} />
+        {fase >= 2 && (
+          <SeccionNicodemo nico={nico} setNico={setNico} onLeer={() => setLectura(true)}
+            onContinuar={() => avanzar(3)} continuado={fase >= 3} scroll={vivo.current} />
+        )}
+        {fase >= 3 && <SeccionJesus onApagar={() => setApagon(true)} scroll={vivo.current} />}
+      </main>
+
+      <button onClick={() => setLectura(true)}
+        className="fixed z-40 inline-flex items-center gap-2 rounded-full bg-wind text-white font-semibold pl-3.5 pr-4 py-3 shadow-[0_12px_28px_-8px_rgba(26,31,79,.6)] active:scale-[.97]"
+        style={{ right: 'calc(16px + env(safe-area-inset-right, 0px))', bottom: 'calc(16px + env(safe-area-inset-bottom, 0px))' }}>
+        <IBook className="w-[18px] h-[18px]" /> Leer Juan 3:1-10
+      </button>
+
+      <ModalLectura abierto={lectura} onClose={() => setLectura(false)} />
+      {apagon && <Apagon picks={picks} nico={nico} onReiniciar={reiniciar} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+</script>
+</body>
+</html>
