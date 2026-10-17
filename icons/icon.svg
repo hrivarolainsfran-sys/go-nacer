@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" fill="#f2400f"/>
+  <g fill="none" stroke="#2232a8" stroke-width="10" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M400 70 L410 112 L452 96 L424 132 L460 156 L416 154 L410 196 L392 160 L352 176 L378 142 L346 118 L388 120 Z"/>
+    <path d="M110 400 q40 -16 80 -2 t80 -4"/>
+  </g>
+  <g transform="translate(256 318) skewX(-12)">
+    <text x="10" y="10" text-anchor="middle" font-family="Impact, Anton, sans-serif" font-size="230" fill="#2232a8">GO!</text>
+    <text x="0" y="0" text-anchor="middle" font-family="Impact, Anton, sans-serif" font-size="230" fill="#ffffff">GO!</text>
+  </g>
+</svg>
