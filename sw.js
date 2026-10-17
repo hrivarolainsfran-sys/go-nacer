@@ -1,6 +1,6 @@
 // Guarda la app y sus librerías para que funcione sin internet después de la primera visita.
 // Al cambiar archivos de la app, sube el número de versión para que los celulares se actualicen.
-const VERSION = 'go-nacer-v1';
+const VERSION = 'go-nacer-v2';
 const APP = ['./', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png', './icons/favicon-32.png'];
 
